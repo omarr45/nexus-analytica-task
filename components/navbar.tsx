@@ -7,8 +7,8 @@ import { ThemeToggle } from './ui/theme-toggle';
 
 const Navbar = () => {
   return (
-    <nav className='border-b-2 p-2'>
-      <div className='mx-auto flex max-w-5xl items-center justify-between gap-2'>
+    <nav className='border-b-2'>
+      <div className='mx-auto flex max-w-5xl items-center justify-between gap-2 p-2'>
         <Link
           className='mr-auto flex items-center justify-center gap-2 text-3xl font-bold'
           href='/'

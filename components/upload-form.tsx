@@ -2,12 +2,14 @@
 
 import { Card, CardContent } from './ui/card';
 import React, { useState } from 'react';
+import { ref, uploadBytes } from 'firebase/storage';
 
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import axios from 'axios';
 import { parseData } from '@/lib/utils';
+import { storage } from '@/lib/firebase';
 import { useDataStore } from '@/stores/data-store';
 import { useForm } from 'react-hook-form';
 
@@ -35,6 +37,13 @@ const UploadForm = () => {
     const formData = new FormData();
     formData.append('csvFile', data.csvFile[0]);
 
+    // upload file to firebase storage
+    const storageRef = ref(storage, data.csvFile[0].name);
+    uploadBytes(storageRef, data.csvFile[0]).then((snapshot) => {
+      console.log('Uploaded a file!'); // left for validation
+    });
+
+    // send file to server
     axios
       .post('/api/upload', formData, {
         headers: {

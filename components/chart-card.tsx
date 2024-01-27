@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -10,14 +10,12 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
+import { getRandomRgbColor, parseData } from '@/lib/utils';
 
 import { Line } from 'react-chartjs-2';
 import React from 'react';
-
-type ChartCardProps = {
-  data: any[];
-  className?: string;
-};
+import { useDataStore } from '@/stores/data-store';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
 ChartJS.register(
   CategoryScale,
@@ -26,47 +24,27 @@ ChartJS.register(
   LineElement,
   Tooltip,
   Legend,
+  zoomPlugin,
 );
 
-const getRandomRgbColor = () => {
-  // In this format: 255, 99, 132
-  const r = Math.floor(Math.random() * 255);
-  const g = Math.floor(Math.random() * 255);
-  const b = Math.floor(Math.random() * 255);
+const ChartCard = () => {
+  const parsedData = useDataStore((state) => state.parsedData);
+  const numericProps = useDataStore((state) => state.numericProps);
+  const selectedNumericProps = useDataStore(
+    (state) => state.selectedNumericProps,
+  );
+  const selectedNonNumericProp = useDataStore(
+    (state) => state.selectedNonNumericProp,
+  );
 
-  const rgb = `rgb(${r},${g},${b})`;
-  const rgba = `rgba(${r},${g},${b},0.4)`;
-  return [rgb, rgba];
-};
-
-const ChartCard: React.FC<ChartCardProps> = ({ data, className }) => {
-  if (!data.length)
+  if (parsedData.length < 1)
     return (
-      <Card className={className}>
+      <Card className='col-span-full'>
         <CardContent className='grid place-items-center p-20'>
           <p>No data</p>
         </CardContent>
       </Card>
     );
-
-  const parsedData = data.map((item) => {
-    const newItem = { ...item };
-    Object.keys(newItem).forEach((key) => {
-      const value = newItem[key];
-      if (!isNaN(value)) {
-        newItem[key] = Number(value);
-      }
-    });
-    return newItem;
-  });
-
-  const numericHeaders = Object.keys(parsedData[0]).filter(
-    (key) => !isNaN(parsedData[0][key]),
-  );
-
-  const nonNumericHeaders = Object.keys(parsedData[0]).filter((key) =>
-    isNaN(parsedData[0][key]),
-  );
 
   const options = {
     responsive: true,
@@ -74,29 +52,51 @@ const ChartCard: React.FC<ChartCardProps> = ({ data, className }) => {
       legend: {
         position: 'top' as const,
       },
-      title: {
-        display: true,
-        text: 'Chart.js Line Chart',
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'xy' as const,
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true,
+          },
+          mode: 'xy' as const,
+        },
       },
     },
   };
 
   return (
-    <Card className={className}>
+    <Card className='col-span-full'>
+      <CardHeader>
+        <CardTitle>
+          {selectedNonNumericProp} vs (
+          {selectedNumericProps.length > 0 && selectedNumericProps.join(', ')})
+        </CardTitle>
+      </CardHeader>
       <CardContent>
         <Line
           options={options}
           data={{
-            labels: parsedData.map((item) => item[nonNumericHeaders[0]]),
-            datasets: numericHeaders.map((header) => {
-              const [rgb, rgba] = getRandomRgbColor();
-              return {
-                label: header,
-                data: parsedData.map((item) => item[header]),
-                backgroundColor: rgb,
-                borderColor: rgba,
-              };
-            }),
+            labels: parsedData.map((item: any) => item[selectedNonNumericProp]),
+            datasets: numericProps
+              .filter((prop) =>
+                // useDataStore.getState().
+                selectedNumericProps.includes(prop),
+              )
+              .map((header) => {
+                const [rgb, rgba] = getRandomRgbColor();
+                return {
+                  label: header,
+                  data: parsedData.map((item: any) => item[header]),
+                  backgroundColor: rgb,
+                  borderColor: rgba,
+                };
+              }),
           }}
         />
       </CardContent>

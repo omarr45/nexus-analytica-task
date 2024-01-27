@@ -1,11 +1,31 @@
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { BarChart3, User } from 'lucide-react';
 
-import { BarChart3 } from 'lucide-react';
+import { Button } from './ui/button';
 import Link from 'next/link';
 import React from 'react';
 import { ThemeToggle } from './ui/theme-toggle';
+import { UserAuth } from '@/contexts/auth-context';
 
 const Navbar = () => {
+  const { user, googleSignIn, logOut } = UserAuth();
+
+  const handleSignIn = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleLogOut = async () => {
+    try {
+      await logOut();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <nav className='border-b-2'>
       <div className='mx-auto flex max-w-5xl items-center justify-between gap-2 p-2'>
@@ -17,12 +37,15 @@ const Navbar = () => {
           Nexus
         </Link>
         <ThemeToggle />
+        <Button
+          variant={user ? 'destructive' : 'default'}
+          onClick={user ? handleLogOut : handleSignIn}
+        >
+          Login
+        </Button>
         <Avatar>
-          {/* <AvatarImage
-            className='scale-125 object-cover'
-            src='/OmarAbdulRahman.jpg'
-          /> */}
-          <AvatarFallback>OA</AvatarFallback>
+          <AvatarImage className='object-cover' src={user?.photoURL || ''} />
+          <AvatarFallback>{<User size={20} />}</AvatarFallback>
         </Avatar>
       </div>
     </nav>

@@ -10,24 +10,28 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
-import { getRandomRgbColor, parseData } from '@/lib/utils';
+import React, { useEffect } from 'react';
 
 import { Line } from 'react-chartjs-2';
-import React from 'react';
+import { getRandomRgbColor } from '@/lib/utils';
 import { useDataStore } from '@/stores/data-store';
-import zoomPlugin from 'chartjs-plugin-zoom';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  zoomPlugin,
-);
 
 const ChartCard = () => {
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then((zoomPlugin) => {
+      ChartJS.register(
+        CategoryScale,
+        LinearScale,
+        PointElement,
+        LineElement,
+        Tooltip,
+        Legend,
+        // @ts-expect-error
+        zoomPlugin,
+      );
+    });
+  }, []);
+
   const parsedData = useDataStore((state) => state.parsedData);
   const numericProps = useDataStore((state) => state.numericProps);
   const selectedNumericProps = useDataStore(

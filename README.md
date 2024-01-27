@@ -1,6 +1,8 @@
 ## Nexus Analytica Task
 A web interface for a simple data analytics platform that allows users to visualize and analyze data.
 
+Check the demo [here](https://github.com/omarr45/nexus-analytica-task)
+
 ![image](https://github.com/omarr45/nexus-analytica-task/assets/58887202/4f6b8f67-8098-4215-94b0-12e10d001d46)
 
 ### How to run

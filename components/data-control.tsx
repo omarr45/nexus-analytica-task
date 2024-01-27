@@ -13,10 +13,16 @@ const DataControl = () => {
   const toggleSelectedNumericProp = useDataStore(
     (state) => state.toggleSelectedNumericProp,
   );
-  const selectedNonNumericProp = useDataStore(
-    (state) => state.selectedNonNumericProp,
-  );
+  const parsedData = useDataStore((state) => state.parsedData);
 
+  if (parsedData.length < 1)
+    return (
+      <Card>
+        <CardContent className='grid h-full place-items-center p-6'>
+          <p>No data</p>
+        </CardContent>
+      </Card>
+    );
   return (
     <Card>
       <CardContent className='grid h-full grid-rows-2 p-4'>

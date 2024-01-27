@@ -41,7 +41,7 @@ const Navbar = () => {
           variant={user ? 'destructive' : 'default'}
           onClick={user ? handleLogOut : handleSignIn}
         >
-          Login
+          {user ? 'Log Out' : 'Log In'}
         </Button>
         <Avatar>
           <AvatarImage className='object-cover' src={user?.photoURL || ''} />
